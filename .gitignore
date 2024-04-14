@@ -1,4 +1,6 @@
 .venv/
+venv/
+test.ans
 .coverage
 .coverage_report/
 .DS_Store

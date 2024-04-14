@@ -6,8 +6,8 @@ from typing       import Any, cast
 from urllib.parse import quote
 
 ##############################################################################
-# HTTPX imports.
-import httpx
+# qr lib imports.
+import segno
 
 ##############################################################################
 # Textual imports.
@@ -82,27 +82,14 @@ class QRCode( Static ):
             self.error = error
 
     async def _get_qr_code( self ) -> None:
-        """Get the QR code from the website."""
+        qrcode = segno.make(self.encoded_content.strip(),micro=False)
+        qrcode.save('test.ans') 
 
-        async with httpx.AsyncClient() as client:
-            try:
-                response = await client.get(
-                    f"https://qrenco.de/{quote( self.encoded_content.strip() )}",
-                    headers={ "user-agent": "textual-qrcode (curl)" }
-                )
-            except httpx.RequestError as error:
-                self.post_message_no_wait( self.Error( error, self ) )
-                return
-            try:
-                response.raise_for_status()
-            except httpx.HTTPStatusError as error:
-                self.post_message_no_wait( self.Error( error, self ) )
-                return
-            self._qr_code = response.text.splitlines()
-
-        self.styles.width  = len( self._qr_code[ 0 ] )
-        self.styles.height = len( self._qr_code )
-        self.post_message_no_wait( self.Encoded( self ) )
-        self.update( "\n".join( self._qr_code ) )
+        self._qr_code = open("test.ans","r").read()
+        
+        self.styles.width  = len(self._qr_code)
+        self.styles.height = len(self._qr_code)
+        
+        self.update( self._qr_code  )
 
 ### qrcode.py ends here
